@@ -16,11 +16,13 @@ import { useRouter } from 'expo-router';
 import { File, Paths } from 'expo-file-system';
 import { useProfile } from '../src/hooks/useProfile';
 import { CameraCapture } from '../src/components/CameraCapture';
+import { useAuthContext } from '../src/contexts/AuthContext';
 
 // Tela de perfil: foto (tirada com a câmera), nome e e-mail
 export default function ProfileScreen() {
   const router = useRouter();
   const { profile, loading, saveProfile } = useProfile();
+  const { user, signOut } = useAuthContext();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -81,6 +83,14 @@ export default function ProfileScreen() {
       Alert.alert('Erro', 'Não foi possível salvar o perfil.');
       setSaving(false);
     }
+  };
+
+  // Pede confirmação; depois do signOut o _layout redireciona para o login sozinho
+  const handleSignOut = () => {
+    Alert.alert('Sair da conta', 'Deseja realmente sair?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Sair', style: 'destructive', onPress: signOut },
+    ]);
   };
 
   if (loading && !profile) {
@@ -168,6 +178,20 @@ export default function ProfileScreen() {
             <Text className="text-white text-base font-bold">Salvar perfil</Text>
           )}
         </TouchableOpacity>
+
+        {/* Conta do Firebase */}
+        <View className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-6">
+          <Text className="text-sm text-gray-500 dark:text-gray-400 text-center mb-4">
+            Conectado como {user?.email}
+          </Text>
+          <TouchableOpacity
+            onPress={handleSignOut}
+            disabled={saving}
+            className="rounded-xl py-4 items-center border border-red-500"
+          >
+            <Text className="text-red-500 text-base font-bold">Sair da conta</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       {/* Câmera em tela cheia; o botão "voltar" do Android também fecha */}

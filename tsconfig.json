@@ -1,6 +1,11 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    // O pacote do Firebase expõe os tipos da versão web primeiro; aqui apontamos
+    // para os tipos da versão React Native (que tem getReactNativePersistence)
+    "paths": {
+      "@firebase/auth": ["./node_modules/@firebase/auth/dist/rn/index.rn.d.ts"]
+    }
   }
 }
